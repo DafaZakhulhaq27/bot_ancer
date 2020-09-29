@@ -12,15 +12,29 @@ const db = knex({
     database : 'support_kediri'
   }
 })
+let id_temp = 0 ;
 
 // Register listeners
 slimbot.on('message', message => {
   let command = message.text ;
   const id = message.chat.id ;
-  const location = message.location ;
-  let id_temp  ;
+  const location = message && message.location ;
   if(location){
-    console.log(id_temp)
+    db('ancer').update({
+      lat : location.latitude,
+      long : location.longitude,
+  }).then( () => {
+    slimbot.sendMessage(
+      id, 
+      `Data sudah lengkap, terima kasih`
+    );     
+  }).catch( err => {
+    slimbot.sendMessage(
+      id, 
+      `Data gagal diinput, Coba Sekali lagi dan pastikan formatnya benar`
+    );        
+  }) 
+
   }
   if(command === '/tanyaancer'){
     slimbot.sendMessage(
@@ -35,7 +49,7 @@ slimbot.on('message', message => {
         id, 
         `Internet : ${data[0].inet}\nVoip : ${data[0].voip}\nNama : ${data[0].nama}\nAncer : ${data[0].ancer}\nAlamat : ${data[0].alamat}`
       );
-      if(data[0].lat !== '0' && data[0].long !== '0'){
+      if(data[0].lat != '0' && data[0].long != '0'){
         slimbot.sendLocation(
           id, 
           data[0].lat,
@@ -43,7 +57,10 @@ slimbot.on('message', message => {
         );  
       }
     }).catch(err => {
-        console.log(err)
+      slimbot.sendMessage(
+        id,
+        `Ancer - ancer tidak ditemukan `
+      )
     })
 
   }else if (message.text.indexOf('03') === 0 ) {
@@ -54,7 +71,7 @@ slimbot.on('message', message => {
         id, 
         `Internet : ${data[0].inet}\nVoip : ${data[0].voip}\nNama : ${data[0].nama}\nAncer : ${data[0].ancer}\nAlamat : ${data[0].alamat}`
       );
-      if(data[0].lat !== '0' && data[0].long !== '0'){
+      if(data[0].lat != '0' && data[0].long != '0'){
         slimbot.sendLocation(
           id, 
           data[0].lat,
@@ -62,7 +79,10 @@ slimbot.on('message', message => {
         );  
       }
     }).catch(err => {
-        console.log(err)
+      slimbot.sendMessage(
+        id,
+        `Ancer - ancer tidak ditemukan `
+      )
     })
 
   } else if (command === '/inputancer') {
@@ -98,14 +118,13 @@ slimbot.on('message', message => {
       }).then( () => {
         slimbot.sendMessage(
           id, 
-          `Data berhasil diinput, Terima kasih,Lanjutkan dengan share lokasi pelanggan untuk melengkapi data`
+          `Data berhasil diinput, Terima kasih,Lanjutkan dengan share lokasi pelanggan untuk melengkapi data `
         );     
       }).catch( err => {
         slimbot.sendMessage(
           id, 
           `Data gagal diinput, Coba Sekali lagi dan pastikan formatnya benar`
         );        
-        console.log(err)
       }) 
     }else{
       slimbot.sendMessage(
